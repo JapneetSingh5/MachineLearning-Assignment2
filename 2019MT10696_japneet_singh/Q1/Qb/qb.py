@@ -3,6 +3,7 @@ import os
 import math
 import random
 
+
 def process_command():
     args_length = len(sys.argv);
     if(args_length<3):
@@ -19,7 +20,7 @@ def main():
     neg_suffix= "/neg"
     pos_suffix= "/pos"
     train_neg_folder = path_train_data + neg_suffix
-    train_pos_folder = path_test_data + pos_suffix
+    train_pos_folder = path_train_data + pos_suffix
     test_neg_folder = path_test_data + neg_suffix
     test_pos_folder = path_test_data + pos_suffix
     # we have phi_pos, phi_neg, count of positive and negative reviews in the training dataset
@@ -53,8 +54,8 @@ def main():
             incorrect_class+=1
             # print("Was Pos, Classified Neg")
         total_class+=1
-    print("Accuracy by random prediction: ", (correct_class/total_class))  
-    print("Accuracy by predicting positive ever time: ", (pos_count/total_class))  
+    print("Test Set Accuracy by Random Prediction: ", (correct_class/total_class)*100)  
+    print("Test Set Accuracy by Always Predicting Positive: ", (pos_count/total_class)*100)  
 
 if __name__ == "__main__":
     main()

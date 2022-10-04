@@ -86,6 +86,7 @@ def main():
     test_data = [[(test_data_file_loaded['data'][i].flatten()/255).tolist(), test_data_file_loaded['labels'][i].tolist()] for i in range(len(test_data_file_loaded['data']))]
     test_data_all_X, test_data_all_Y = build_all_test_data(train_data, test_data)
     m,n = test_data_all_X.shape
+    
     confusion_matrix_gaussian = np.zeros((5,5))
     predictions = np.zeros((m, 5))
     predictors = np.empty((5,5), dtype=dict)

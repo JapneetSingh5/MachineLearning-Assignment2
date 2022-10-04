@@ -68,6 +68,9 @@ def main():
     # 2. tokenize
     # 3. remove non-alphanumeric/special characters
     review = ""
+    use_unigrams = True
+    use_bigrams = False
+    use_trigrams = True
     # TRAIN - NEGATIVE REVIEWS
     for txt_file_name in os.listdir(train_neg_folder):
         txt_file_path = os.path.join(train_neg_folder, txt_file_name)
@@ -83,13 +86,20 @@ def main():
                 stemmed_word = ps.stem(word)
                 tokenized_review.append(stemmed_word)
         bigrams = [(tokenized_review[i] + ' ' + tokenized_review[i+1]) for i in range(len(tokenized_review)-1)]
+        trigrams = [(tokenized_review[i] + ' ' + tokenized_review[i+1]+ ' ' + tokenized_review[i+2]) for i in range(len(tokenized_review)-2)]
         # add all the words thus obtained to the vocabulary
         # as we are processing negative reviews right now, we use the negative vocabulary dict
-        for word in set(tokenized_review):
-            neg_vocabulary_dict[word]+=1;
-        for bigram in bigrams:
-            print(bigram)        
-            neg_vocabulary_dict[bigram]+=1   
+        if use_unigrams:
+            for word in set(tokenized_review):
+                neg_vocabulary_dict[word]+=1;
+        if use_bigrams:
+            for bigram in set(bigrams):
+                # print(bigram)        
+                neg_vocabulary_dict[bigram]+=1   
+        if use_trigrams:
+            for trigram in set(trigrams):
+                # print(trigram)        
+                neg_vocabulary_dict[trigram]+=1 
     # TRAIN - POSITIVE REVIEWS
     for txt_file_name in os.listdir(train_pos_folder):
         txt_file_path = os.path.join(train_pos_folder, txt_file_name)
@@ -107,11 +117,17 @@ def main():
         bigrams = [(tokenized_review[i] + ' ' + tokenized_review[i+1]) for i in range(len(tokenized_review)-1)]
         # add all the words thus obtained to the vocabulary
         # as we are processing negative reviews right now, we use the positive vocabulary dict
-        for word in set(tokenized_review):
-            pos_vocabulary_dict[word]+=1
-        for bigram in bigrams:
-            print(bigram)        
-            pos_vocabulary_dict[bigram]+=1   
+        if use_unigrams:
+            for word in set(tokenized_review):
+                pos_vocabulary_dict[word]+=1;
+        if use_bigrams:
+            for bigram in set(bigrams):
+                # print(bigram)        
+                pos_vocabulary_dict[bigram]+=1   
+        if use_trigrams:
+            for trigram in set(trigrams):
+                # print(trigram)        
+                pos_vocabulary_dict[trigram]+=1 
     phi_pos, phi_neg, pos_count, neg_count = build_phi(train_neg_folder, train_pos_folder)
     # build word cloud for positive review vocabulary
     plt.figure(1)
@@ -149,12 +165,19 @@ def main():
                 stemmed_word = ps.stem(word)
                 tokenized_review.append(stemmed_word)
         bigrams = [(tokenized_review[i] + ' ' + tokenized_review[i+1]) for i in range(len(tokenized_review)-1)]
-        for word in set(tokenized_review):
-            prob_pos+=math.log((pos_vocabulary_dict[word] + 1)/(pos_count + 2));
-            prob_neg+=math.log((neg_vocabulary_dict[word] + 1)/(neg_count + 2));
-        for bigram in bigrams:
-            prob_pos+=math.log((pos_vocabulary_dict[bigram] + 1)/(pos_count + 2));
-            prob_neg+=math.log((neg_vocabulary_dict[bigram] + 1)/(neg_count + 2));            
+        trigrams = [(tokenized_review[i] + ' ' + tokenized_review[i+1]+ ' ' + tokenized_review[i+2]) for i in range(len(tokenized_review)-2)]
+        if use_unigrams:
+            for word in set(tokenized_review):
+                prob_pos+=math.log((pos_vocabulary_dict[word] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[word] + 1)/(neg_count + 2));
+        if use_bigrams:
+            for bigram in set(bigrams):
+                prob_pos+=math.log((pos_vocabulary_dict[bigram] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[bigram] + 1)/(neg_count + 2));            
+        if use_trigrams:
+            for trigram in set(trigrams):
+                prob_pos+=math.log((pos_vocabulary_dict[trigram] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[trigram] + 1)/(neg_count + 2));            
         if prob_neg > prob_pos :
             train_correct_class+=1
             print("Was Neg, Classified Neg")
@@ -175,12 +198,19 @@ def main():
                 stemmed_word = ps.stem(word)
                 tokenized_review.append(stemmed_word)
         bigrams = [(tokenized_review[i] + ' ' + tokenized_review[i+1]) for i in range(len(tokenized_review)-1)]
-        for word in set(tokenized_review):
-            prob_pos+=math.log((pos_vocabulary_dict[word] + 1)/(pos_count + 2));
-            prob_neg+=math.log((neg_vocabulary_dict[word] + 1)/(neg_count + 2));
-        for bigram in bigrams:
-            prob_pos+=math.log((pos_vocabulary_dict[bigram] + 1)/(pos_count + 2));
-            prob_neg+=math.log((neg_vocabulary_dict[bigram] + 1)/(neg_count + 2));   
+        trigrams = [(tokenized_review[i] + ' ' + tokenized_review[i+1]+ ' ' + tokenized_review[i+2]) for i in range(len(tokenized_review)-2)]
+        if use_unigrams:
+            for word in set(tokenized_review):
+                prob_pos+=math.log((pos_vocabulary_dict[word] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[word] + 1)/(neg_count + 2));
+        if use_bigrams:
+            for bigram in set(bigrams):
+                prob_pos+=math.log((pos_vocabulary_dict[bigram] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[bigram] + 1)/(neg_count + 2));            
+        if use_trigrams:
+            for trigram in set(trigrams):
+                prob_pos+=math.log((pos_vocabulary_dict[trigram] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[trigram] + 1)/(neg_count + 2));            
         # print(prob_pos, prob_neg)         
         if prob_pos > prob_neg :
             train_correct_class+=1
@@ -211,12 +241,19 @@ def main():
                 stemmed_word = ps.stem(word)
                 tokenized_review.append(stemmed_word)
         bigrams = [(tokenized_review[i] + ' ' + tokenized_review[i+1]) for i in range(len(tokenized_review)-1)]
-        for word in set(tokenized_review):
-            prob_pos+=math.log((pos_vocabulary_dict[word] + 1)/(pos_count + 2));
-            prob_neg+=math.log((neg_vocabulary_dict[word] + 1)/(neg_count + 2));
-        for bigram in bigrams:
-            prob_pos+=math.log((pos_vocabulary_dict[bigram] + 1)/(pos_count + 2));
-            prob_neg+=math.log((neg_vocabulary_dict[bigram] + 1)/(neg_count + 2));   
+        trigrams = [(tokenized_review[i] + ' ' + tokenized_review[i+1]+ ' ' + tokenized_review[i+2]) for i in range(len(tokenized_review)-2)]
+        if use_unigrams:
+            for word in set(tokenized_review):
+                prob_pos+=math.log((pos_vocabulary_dict[word] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[word] + 1)/(neg_count + 2));
+        if use_bigrams:
+            for bigram in set(bigrams):
+                prob_pos+=math.log((pos_vocabulary_dict[bigram] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[bigram] + 1)/(neg_count + 2));            
+        if use_trigrams:
+            for trigram in set(trigrams):
+                prob_pos+=math.log((pos_vocabulary_dict[trigram] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[trigram] + 1)/(neg_count + 2));            
         if prob_neg > prob_pos :
             correct_class+=1
             print("Was Neg, Classified Neg")
@@ -240,12 +277,19 @@ def main():
                 stemmed_word = ps.stem(word)
                 tokenized_review.append(stemmed_word)
         bigrams = [(tokenized_review[i] + ' ' + tokenized_review[i+1]) for i in range(len(tokenized_review)-1)]
-        for word in set(tokenized_review):
-            prob_pos+=math.log((pos_vocabulary_dict[word] + 1)/(pos_count + 2));
-            prob_neg+=math.log((neg_vocabulary_dict[word] + 1)/(neg_count + 2));
-        for bigram in bigrams:
-            prob_pos+=math.log((pos_vocabulary_dict[bigram] + 1)/(pos_count + 2));
-            prob_neg+=math.log((neg_vocabulary_dict[bigram] + 1)/(neg_count + 2));         
+        trigrams = [(tokenized_review[i] + ' ' + tokenized_review[i+1]+ ' ' + tokenized_review[i+2]) for i in range(len(tokenized_review)-2)]
+        if use_unigrams:
+            for word in set(tokenized_review):
+                prob_pos+=math.log((pos_vocabulary_dict[word] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[word] + 1)/(neg_count + 2));
+        if use_bigrams:
+            for bigram in set(bigrams):
+                prob_pos+=math.log((pos_vocabulary_dict[bigram] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[bigram] + 1)/(neg_count + 2));            
+        if use_trigrams:
+            for trigram in set(trigrams):
+                prob_pos+=math.log((pos_vocabulary_dict[trigram] + 1)/(pos_count + 2));
+                prob_neg+=math.log((neg_vocabulary_dict[trigram] + 1)/(neg_count + 2));            
         if prob_pos > prob_neg :
             correct_class+=1
             print("Was Pos, Classified Pos")

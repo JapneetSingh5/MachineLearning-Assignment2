@@ -5,6 +5,8 @@ import cvxopt
 import time
 from scipy import spatial
 from sklearn import svm
+import matplotlib.pyplot as plt
+import seaborn as sb
 
 def process_command():
     args_length = len(sys.argv);
@@ -43,7 +45,7 @@ def main():
     test_data = [[(test_data_file_loaded['data'][i].flatten()/255).tolist(), test_data_file_loaded['labels'][i].tolist()] for i in range(len(test_data_file_loaded['data']))]
     gamma = 0.001
     test_data_all_X, test_data_all_Y = build_all_test_data(train_data, test_data)
-    m,n = test_data_all_X.shape
+    m,_ = test_data_all_X.shape
     confusion_matrix_gaussian = np.zeros((5,5))
     predictions = np.zeros((m, 5))
     predictors = np.empty((5,5), dtype=svm.SVC)
@@ -60,18 +62,14 @@ def main():
             # test_accuracy_gaussian_skl_svm = 100.0*sum(x == y for x,y in zip(test_predictions.reshape(-1,1), test_data_Y))/len(test_data_Y)
             # print(test_accuracy_gaussian_skl_svm)
             # print(test_predictions, test_data_Y)
-    for i in range(5):
-        for j in range(i+1, 5):
             test_predictions = predictors[i,j].predict(test_data_all_X)
             for k in range(len(test_predictions)):
                 if test_predictions[k]==-1:
                     predictions[k,i]+=1
                 else:
                     predictions[k, j]+=1
+
     max_score = [0]*m
-    # for i in range(len(predictions)):
-        
-    #     max_score[i] = final
     print(predictions)
     for i in range(len(predictions)):
         temp_max_index = 0
@@ -84,6 +82,20 @@ def main():
     test_accuracy_gaussian_skl_svm = 100.0*sum(x == y for x,y in zip(np.array(max_score).reshape(-1,1), test_data_all_Y))/len(test_data_all_Y)
     print(test_accuracy_gaussian_skl_svm)
     print(max_score, test_data_all_Y)
+    for i in range(0, len(test_data_all_Y)):
+        # (predicted, actual)
+        confusion_matrix_gaussian[max_score[i],test_data_all_Y[i]] += 1
+    fig = plt.figure(figsize=(16, 12))
+    # print(actual_p_predicted_p, actual_n_predicted_p, actual_p_predicted_n, actual_n_predicted_n)
+    plotit = sb.heatmap(confusion_matrix_gaussian, annot=True, cmap="Greens", fmt='g')
+    ax = fig.gca()
+    ax.xaxis.tick_top()
+    ax.set_xlabel("Actual Class")
+    ax.set_ylabel("Predicted Class")
+    plt.title("Confusion Matrix (for Test Data Only)")
+    ax.xaxis.set_label_position('top')
+    plt.savefig("confusion_matrix.png")
+    plt.show()
 
 
 

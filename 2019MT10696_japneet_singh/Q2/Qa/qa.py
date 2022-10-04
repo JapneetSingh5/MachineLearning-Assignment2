@@ -112,12 +112,19 @@ def main():
     pos_svs = len(train_data_Y[support_vectors_gaussian] == 1)
     # print(alphas)
     # print(support_vectors_linear)
-    pdist = spatial.distance.cdist(train_data_X[supp_vec_ind], train_data_X, 'sqeuclidean')
-    K_train = np.exp(-1*0.05*(pdist))
-    w_gaussian = np.dot(K_train.T, (alphas_gaussian[support_vectors_gaussian]*train_data_Y[support_vectors_gaussian]))
-    # w_gaussian = ((train_data_Y[support_vectors_gaussian] * alphas_gaussian[support_vectors_gaussian]).T @ train_data_X[support_vectors_gaussian]).reshape(-1, 1)
-    bias = train_data_Y[support_vectors_gaussian] - w_gaussian
+    pdist2 = spatial.distance.pdist(train_data_X[supp_vec_ind], 'sqeuclidean')
+    K_train = np.exp(-1*gamma*spatial.distance.squareform(pdist2))
+    w_train = np.dot(K_train.T, (alphas_gaussian[support_vectors_gaussian]*train_data_Y[support_vectors_gaussian]))
+    bias = train_data_Y[support_vectors_gaussian] - w_train
     b_gaussian = np.mean(bias)
+    cdist = spatial.distance.cdist(train_data_X[supp_vec_ind], train_data_X, 'sqeuclidean')
+    K_train2 = np.exp(-1*gamma*(cdist))
+    w_gaussian = np.dot(K_train2.T, (alphas_gaussian[supp_vec_ind]*train_data_Y[supp_vec_ind]))
+    train_prediction_gaussian = w_gaussian + b_gaussian
+    # w_gaussian = np.dot(K_train.T, (alphas_gaussian[support_vectors_gaussian]*train_data_Y[support_vectors_gaussian]))
+    # w_gaussian = ((train_data_Y[support_vectors_gaussian] * alphas_gaussian[support_vectors_gaussian]).T @ train_data_X[support_vectors_gaussian]).reshape(-1, 1)
+    # bias = train_data_Y[support_vectors_gaussian] - w_gaussian
+    # b_gaussian = np.mean(bias)
     # a = np.multiply(train_data_Y.reshape(-1, 1), alphas_gaussian)
     # b_gaussian = (train_data_Y - w_gaussian)
     # b_gaussian = np.mean(b_gaussian)
@@ -126,17 +133,21 @@ def main():
     print("alphas", alphas_gaussian.size, alphas_gaussian)
     print("support vectors", support_vectors_gaussian.size, support_vectors_gaussian)
     print("pos_svs", pos_svs)
-    cdist = spatial.distance.cdist(train_data_X[supp_vec_ind], train_data_X, 'sqeuclidean')
-    K_train2 = np.exp(-1*0.05*(cdist))
-    w2 = np.dot(K_train2.T, (alphas_gaussian[supp_vec_ind]*train_data_Y[supp_vec_ind]))
-    train_prediction_gaussian = w2 + b_gaussian
+    # cdist = spatial.distance.cdist(train_data_X[supp_vec_ind], train_data_X, 'sqeuclidean')
+    # K_train2 = np.exp(-1*0.05*(cdist))
+    # w2 = np.dot(K_train2.T, (alphas_gaussian[supp_vec_ind]*train_data_Y[supp_vec_ind]))
+    # train_prediction_gaussian = w2 + b_gaussian
     # train_prediction_gaussian = w_gaussian + b_gaussian
     # train_prediction_gaussian = np.dot(train_data_X, w_gaussian) + b_gaussian
     print("train pred gaussian", train_prediction_gaussian)
     train_prediction_gaussian_final = np.array([1.0 if x >= 0 else -1.0 for x in train_prediction_gaussian])
     train_accuracy_gaussian = 100.0*sum(x == y for x,y in zip(train_prediction_gaussian_final, train_data_Y))/len(train_data_Y)
     print(train_prediction_gaussian_final, train_accuracy_gaussian)
-    test_prediction_gaussian = np.dot(test_data_X, w_gaussian) + b_gaussian
+    cdist2 = spatial.distance.cdist(train_data_X[supp_vec_ind], test_data_X, 'sqeuclidean')
+    K_train3 = np.exp(-1*gamma*(cdist2))
+    w_gaussian_test = np.dot(K_train3.T, (alphas_gaussian[supp_vec_ind]*train_data_Y[supp_vec_ind]))
+    test_prediction_gaussian = w_gaussian_test + b_gaussian
+    # test_prediction_gaussian = np.dot(test_data_X, w_gaussian) + b_gaussian
     test_prediction_gaussian_final = np.array([1.0 if x >= 0 else -1.0 for x in test_prediction_gaussian])
     test_accuracy_gaussian = 100.0*sum(x == y for x,y in zip(test_prediction_gaussian_final, test_data_Y))/len(test_data_Y)
     print(test_prediction_gaussian_final, test_accuracy_gaussian)

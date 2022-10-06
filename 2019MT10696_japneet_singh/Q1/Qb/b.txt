@@ -1,0 +1,2 @@
+Test Set Accuracy by Random Prediction:  50.153333333333336
+Test Set Accuracy by Always Predicting Positive:  66.66666666666666

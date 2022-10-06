@@ -38,19 +38,19 @@ def gaussian_cvxopt(train_data_X, train_data_Y):
     gamma = 0.001
     c = 1
     m,_ = train_data_X.shape
-    pdist = spatial.distance.pdist(train_data_X, 'sqeuclidean')
-    K = np.exp(-1*gamma*spatial.distance.squareform(pdist))
-    P = cvxopt.matrix(np.outer(train_data_Y, train_data_Y)*K)
-    # Qm×1[i] = 1
+    train_pdist = spatial.distance.pdist(train_data_X, 'sqeuclidean')
+    kernel_train = np.exp(-1*gamma*spatial.distance.squareform(train_pdist))
+    P = cvxopt.matrix(np.outer(train_data_Y, train_data_Y)*kernel_train)
+    # Q(mx1) = [1;1;1....1]
     q = cvxopt.matrix(-1.0*np.ones((m, 1)))
-    # A1×m[i] = y(i)
+    # G(2mxm) = [−I(mxm); I(mxm)]
+    G = cvxopt.matrix(np.vstack((-1.0*np.eye(m),c*1.0*np.eye(m))))
+    # h(2mx1) = [Zeros(mx1); C x (Ones(mx1))]
+    h = cvxopt.matrix(np.hstack((np.zeros(m),c*1.0*np.ones(m))))
+    # A(1xm)[i] = y(i)
     A = cvxopt.matrix(train_data_Y.reshape(1,-1))
     # b=0
     b = cvxopt.matrix(np.zeros(1))
-    # G2m×m = [−Identity(m); Identity(m)]
-    G = cvxopt.matrix(np.vstack((-1.0*np.eye(m),c*1.0*np.eye(m))))
-    # h2m×1 = [Zerosm×1; C × Onesm×1]
-    h = cvxopt.matrix(np.hstack((np.zeros(m),c*1.0*np.ones(m))))
     cvxopt.solvers.options['show_progress'] = True
     sol = cvxopt.solvers.qp(P, q, G, h, A, b)
     end_time = time.time()
@@ -59,20 +59,27 @@ def gaussian_cvxopt(train_data_X, train_data_Y):
 
 def predict_class(train_data_X, train_data_Y, test_data_all_X, sol_gaussian):
     gamma = 0.001
+    # get alphas 
     alphas_gaussian = np.array(sol_gaussian['x'])
+    # get support vectors
     support_vectors_gaussian = (alphas_gaussian > 1e-4)
-    supp_vec_ind = np.where(support_vectors_gaussian == True)[0]
+    # get indices of support vectors
+    indices = np.where(support_vectors_gaussian == True)[0]
     support_vectors_gaussian = support_vectors_gaussian.flatten()
-    pdist_train = spatial.distance.pdist(train_data_X[supp_vec_ind], 'sqeuclidean')
-    K_train = np.exp(-1*gamma*spatial.distance.squareform(pdist_train))
-    w_train = np.dot(K_train.T, (alphas_gaussian[support_vectors_gaussian]*train_data_Y[support_vectors_gaussian]))
-    bias = train_data_Y[support_vectors_gaussian] - w_train
-    b_gaussian = np.mean(bias)
-    cdist_test = spatial.distance.cdist(train_data_X[supp_vec_ind], test_data_all_X, 'sqeuclidean')
-    K_test = np.exp(-1*gamma*(cdist_test))
-    w_gaussian_test = np.dot(K_test.T, (alphas_gaussian[supp_vec_ind]*train_data_Y[supp_vec_ind]))
+    # build gaussian kernel
+    train_pdist_svs = spatial.distance.pdist(train_data_X[indices], 'sqeuclidean')
+    kernel_train = np.exp(-1*gamma*spatial.distance.squareform(train_pdist_svs))
+    w_train = np.dot(kernel_train.T, (alphas_gaussian[support_vectors_gaussian]*train_data_Y[support_vectors_gaussian]))
+    # build bias
+    b_gaussian = np.mean(train_data_Y[support_vectors_gaussian] - w_train)
+    cdist_test = spatial.distance.cdist(train_data_X[indices], test_data_all_X, 'sqeuclidean')
+    # kernel for test set 
+    kernel_test = np.exp(-1*gamma*(cdist_test))
+    w_gaussian_test = np.dot(kernel_test.T, (alphas_gaussian[indices]*train_data_Y[indices]))
+    # raw test predictions
     test_prediction_gaussian = w_gaussian_test + b_gaussian
-    test_predictions = np.array([1.0 if x >= 0 else -1.0 for x in test_prediction_gaussian])
+    # classify predictions into classes
+    test_predictions = np.array([1.0 if wtb >= 0 else -1.0 for wtb in test_prediction_gaussian])
     return test_predictions
 
 
@@ -85,8 +92,8 @@ def main():
     train_data = [[(train_data_file_loaded['data'][i].flatten()/255).tolist(), train_data_file_loaded['labels'][i].tolist()] for i in range(len(train_data_file_loaded['data']))]
     test_data = [[(test_data_file_loaded['data'][i].flatten()/255).tolist(), test_data_file_loaded['labels'][i].tolist()] for i in range(len(test_data_file_loaded['data']))]
     test_data_all_X, test_data_all_Y = build_all_test_data(train_data, test_data)
-    m,n = test_data_all_X.shape
-    
+    m,_ = test_data_all_X.shape
+
     confusion_matrix_gaussian = np.zeros((5,5))
     predictions = np.zeros((m, 5))
     predictors = np.empty((5,5), dtype=dict)
@@ -103,8 +110,8 @@ def main():
                 else:
                     predictions[k, j]+=1
     max_score = [0]*m
-    print(len(max_score), len(predictions))
-    print(predictions)
+    # print(len(max_score), len(predictions))
+    # print(predictions)
     for i in range(m):
         temp_max_index = 0
         temp_max_score = predictions[i,0]
@@ -113,16 +120,16 @@ def main():
                 temp_max_score = predictions[i,j]
                 temp_max_index = j
         max_score[i] = temp_max_index
-    test_accuracy_gaussian_skl_svm = 100.0*sum(x == y for x,y in zip(np.array(max_score).reshape(-1,1), test_data_all_Y))/len(test_data_all_Y)
-    print(test_accuracy_gaussian_skl_svm)
-    print(max_score, test_data_all_Y)
+    test_accuracy_gaussian_skl_svm = 100.0*sum(predicted == actual for predicted,actual in zip(np.array(max_score).reshape(-1,1), test_data_all_Y))/len(test_data_all_Y)
+    print("Test Accuracy gaussian multi class", test_accuracy_gaussian_skl_svm)
+    # print(max_score, test_data_all_Y)
     test_data_all_Y = test_data_all_Y.ravel()
     for i in range(0, len(test_data_all_Y)):
         # (predicted, actual)
         confusion_matrix_gaussian[max_score[i],test_data_all_Y[i]] += 1
     fig = plt.figure(figsize=(16, 12))
     # print(actual_p_predicted_p, actual_n_predicted_p, actual_p_predicted_n, actual_n_predicted_n)
-    plotit = sb.heatmap(confusion_matrix_gaussian, annot=True, cmap="Greens", fmt='g')
+    _ = sb.heatmap(confusion_matrix_gaussian, annot=True, cmap="Greens", fmt='g')
     ax = fig.gca()
     ax.xaxis.tick_top()
     ax.set_xlabel("Actual Class")

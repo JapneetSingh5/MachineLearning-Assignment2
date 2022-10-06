@@ -1,4 +1,3 @@
-from curses.ascii import isalnum
 import sys
 import os
 import math
@@ -11,12 +10,14 @@ from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 import seaborn as sb
 
-# for last obtained train and test set accuracies, see d.txt 
+# for last obtained train and test set accuracies, see e.txt 
+# NOTE :: set use_unigrams, use_bigrams, use_trigrams according to the feature needs
 
 def build_confusion_matrix(actual_p_predicted_p, actual_n_predicted_p, actual_p_predicted_n, actual_n_predicted_n):
     fig = plt.figure(figsize=(8, 6))
     matrix = [[actual_p_predicted_p,actual_n_predicted_p], [actual_p_predicted_n,actual_n_predicted_n]]
-    plotit = sb.heatmap(matrix, annot=True, cmap="Greens", fmt='g')
+    print("Confusion matrix", matrix)
+    _ = sb.heatmap(matrix, annot=True, cmap="Greens", fmt='g')
     ax = fig.gca()
     ax.xaxis.tick_top()
     ax.set_xlabel("Actual Class")
@@ -69,8 +70,8 @@ def main():
     # 3. remove non-alphanumeric/special characters
     review = ""
     use_unigrams = True
-    use_bigrams = False
-    use_trigrams = True
+    use_bigrams = True
+    use_trigrams = False
     # TRAIN - NEGATIVE REVIEWS
     for txt_file_name in os.listdir(train_neg_folder):
         txt_file_path = os.path.join(train_neg_folder, txt_file_name)
@@ -150,6 +151,7 @@ def main():
 
     train_correct_class = 0
     train_total_class = 0
+    train_incorrect_class = 0
 
     # TRAIN - NEGATIVE REVIEWS
     for txt_file_name in os.listdir(train_neg_folder):
@@ -180,9 +182,10 @@ def main():
                 prob_neg+=math.log((neg_vocabulary_dict[trigram] + 1)/(neg_count + 2));            
         if prob_neg > prob_pos :
             train_correct_class+=1
-            print("Was Neg, Classified Neg")
+            # print("Was Neg, Classified Neg")
         else :
-            print("Was Neg, Classified Pos")
+            train_incorrect_class += 1
+            # print("Was Neg, Classified Pos")
         train_total_class+=1
     # TRAIN - POSITIVE REVIEWS
     for txt_file_name in os.listdir(train_pos_folder):
@@ -214,9 +217,10 @@ def main():
         # print(prob_pos, prob_neg)         
         if prob_pos > prob_neg :
             train_correct_class+=1
-            print("Was Pos, Classified Pos")
+            # print("Was Pos, Classified Pos")
         else :
-            print("Was Pos, Classified Neg")
+            train_incorrect_class+=1
+            # print("Was Pos, Classified Neg")
         train_total_class+=1
     print("Train Set Accuracy: ", (train_correct_class/train_total_class)*100) 
 
@@ -256,11 +260,11 @@ def main():
                 prob_neg+=math.log((neg_vocabulary_dict[trigram] + 1)/(neg_count + 2));            
         if prob_neg > prob_pos :
             correct_class+=1
-            print("Was Neg, Classified Neg")
+            # print("Was Neg, Classified Neg")
             actual_n_predicted_n += 1
         else :
             actual_n_predicted_p += 1
-            print("Was Neg, Classified Pos")
+            # print("Was Neg, Classified Pos")
         total_class+=1
     # TEST SET - POSITIVE REVIEWS
     for txt_file_name in os.listdir(test_pos_folder):
@@ -292,10 +296,10 @@ def main():
                 prob_neg+=math.log((neg_vocabulary_dict[trigram] + 1)/(neg_count + 2));            
         if prob_pos > prob_neg :
             correct_class+=1
-            print("Was Pos, Classified Pos")
+            # print("Was Pos, Classified Pos")
             actual_p_predicted_p += 1
         else :
-            print("Was Pos, Classified Neg")
+            # print("Was Pos, Classified Neg")
             actual_p_predicted_n += 1
         total_class+=1
     accuracy = correct_class/total_class

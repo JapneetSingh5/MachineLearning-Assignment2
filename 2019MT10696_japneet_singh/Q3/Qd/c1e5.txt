@@ -1,0 +1,115 @@
+[4]  + 17178 suspended  python3 qd.py   > d.txt
+➜  Qd git:(main) ✗ python3 qd.py /Users/japneet/Desktop/COL774/COL774-Assignment2/assn2_data/part2_data /Users/japneet/Desktop/COL774/COL774-Assignment2/assn2_data/part2_data       
+Here
+Classifier for 0 and 1
+[50.14040562]
+Classifier for 0 and 2
+[50.17149984]
+Classifier for 0 and 3
+[50.0625]
+Classifier for 0 and 4
+[50.21998743]
+Classifier for 1 and 2
+[50.03109453]
+Classifier for 1 and 3
+[50.07790589]
+Classifier for 1 and 4
+[50.36038859]
+Classifier for 2 and 3
+[50.10900031]
+Classifier for 2 and 4
+[50.39148137]
+Classifier for 3 and 4
+[50.28248588]
+Accuracy 1e-05 [19.55]
+0 0 [19.55]
+Classifier for 0 and 1
+[50.53058677]
+Classifier for 0 and 2
+[50.46758105]
+Classifier for 0 and 3
+[50.04636785]
+Classifier for 0 and 4
+[50.43613707]
+Classifier for 1 and 2
+[50.06301197]
+Classifier for 1 and 3
+[50.48422368]
+Classifier for 1 and 4
+[50.09445844]
+Classifier for 2 and 3
+[50.42121685]
+Classifier for 2 and 4
+[50.03144654]
+Classifier for 3 and 4
+[50.38977237]
+Accuracy 1e-05 [19.05]
+0 1 [19.05]
+Classifier for 0 and 1
+[50.24984385]
+Classifier for 0 and 2
+[50.12586532]
+Classifier for 0 and 3
+[50.06269592]
+Classifier for 0 and 4
+[50.35836709]
+Classifier for 1 and 2
+[50.37570445]
+Classifier for 1 and 3
+[50.1871491]
+Classifier for 1 and 4
+[50.10852713]
+Classifier for 2 and 3
+[50.18856065]
+Classifier for 2 and 4
+[50.48422368]
+Classifier for 3 and 4
+[50.29567383]
+Accuracy 1e-05 [19.2]
+0 2 [19.2]
+Classifier for 0 and 1
+[50.53191489]
+Classifier for 0 and 2
+[50.54738818]
+Classifier for 0 and 3
+[50.11044494]
+Classifier for 0 and 4
+[50.29864822]
+Classifier for 1 and 2
+[50.01547509]
+Classifier for 1 and 3
+[50.42147986]
+Classifier for 1 and 4
+[50.23328149]
+Classifier for 2 and 3
+[50.43695381]
+Classifier for 2 and 4
+[50.24875622]
+Classifier for 3 and 4
+[50.18820577]
+Accuracy 1e-05 [19.2]
+0 3 [19.2]
+Classifier for 0 and 1
+[50.39148137]
+Classifier for 0 and 2
+[50.12461059]
+Classifier for 0 and 3
+[50.1871491]
+Classifier for 0 and 4
+[77.09757613]
+Classifier for 1 and 2
+[50.26687598]
+Classifier for 1 and 3
+[50.20433826]
+Classifier for 1 and 4
+[50.39148137]
+Classifier for 2 and 3
+[50.06253909]
+Classifier for 2 and 4
+[50.12461059]
+Classifier for 3 and 4
+[50.1871491]
+Accuracy 1e-05 [29.6]
+0 4 [29.6]
+[array([106.6]), 0, 0, 0, 0]
+➜  Qd git:(main) ✗ 

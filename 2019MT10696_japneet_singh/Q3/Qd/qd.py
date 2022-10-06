@@ -27,7 +27,6 @@ def transform_label(label, class1, class2):
     else :
         return 1.0
 
-
 def predict_class(train_data, val_data, gamma, c):
     predictors = np.empty((5,5), dtype=svm.SVC)
     for i in range(5):
@@ -105,11 +104,11 @@ def main():
     # print(len(train_list[0]), len(val_list[0]))
     print("Here")
     val_accuracy = [0,0,0,0,0]
-    c_index = 4
-    for i in range(5):
-        val_acc = predict_class(train_list[i], val_list[i], gamma, c_values[c_index])
-        print(c_index,i,val_acc)
-        val_accuracy[c_index]+= val_acc
+    for c_index in range(5):
+        for i in range(5):
+            val_acc = predict_class(train_list[i], val_list[i], gamma, c_values[c_index])
+            print(c_index,i,val_acc)
+            val_accuracy[c_index]+= val_acc
     print(val_accuracy)
 
 

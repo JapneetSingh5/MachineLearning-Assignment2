@@ -12,27 +12,19 @@
 10: -7.1850e+02 -7.1850e+02  2e-03  3e-09  5e-10
 11: -7.1850e+02 -7.1850e+02  5e-05  6e-11  5e-10
 Optimal solution found.
-Time taken to solve using cvxopt with linear kernel: 38.64611196517944
-w [[-0.74568524]
+Time taken for CVXOPT - Linear Kernel 24.27326202392578
+w for  CVXOPT Linear Kernel [[-0.74568524]
  [ 0.03275555]
  [-0.4837071 ]
  ...
  [-0.09054527]
  [ 0.09773743]
  [-1.04533169]]
-b 0.07047682389961614
-alphas 4000 [[1.81248569e-08]
- [9.99999678e-01]
- [1.34999880e-09]
- ...
- [1.64929190e-01]
- [1.42453725e-09]
- [3.41107676e-09]]
-support vectors 4000 [False  True False ...  True False False]
-pos_svs 1543
-neg_svs 1543
-[-1. -1. -1. ...  1.  1.  1.] [94.95]
-[ 1. -1. -1. ...  1.  1.  1.] [78.15]
+b for CVXOPT Linear Kernel 0.07047682389961614
+alphas for CVXOPT Linear Kernel (count)  4000
+support vectors for CVXOPT Linear Kernel (count) 1543
+Train Accuracy CVXOPT Linear Kernel [94.95]
+Test Accuracy CVXOPT Linear Kernel [78.15]
      pcost       dcost       gap    pres   dres
  0: -1.5619e+03 -1.0941e+04  6e+04  3e+00  8e-13
  1: -1.0747e+03 -7.6723e+03  1e+04  3e-01  8e-13
@@ -46,52 +38,24 @@ neg_svs 1543
  9: -1.4773e+03 -1.4773e+03  9e-03  2e-08  1e-12
 10: -1.4773e+03 -1.4773e+03  2e-04  4e-10  1e-12
 Optimal solution found.
-Time taken to solve using cvxopt with gaussian kernel: 46.045270919799805
-w [[4.53885645]
- [4.93475227]
- [4.01461105]
- ...
- [6.87628308]
- [8.09249475]
- [5.70564386]]
-b -6.086002620715735
-alphas 4000 [[3.60657330e-08]
+Time taken for CVXOPT - Gaussiann Kernel 35.24238991737366
+b for CVXOPT Gaussian Kernel -6.086002620715735
+alphas for CVXOPT Gaussian Kernel 4000 [[3.60657330e-08]
  [1.51825375e-07]
  [1.74585435e-08]
  ...
  [9.99999904e-01]
  [1.83922215e-08]
  [9.99999985e-01]]
-support vectors 4000 [False False False ...  True False  True]
-pos_svs 1872
-train pred gaussian [[-1.54714617]
- [-1.15125035]
- [-2.07139157]
- ...
- [ 0.79028046]
- [ 2.00649213]
- [-0.38035876]]
-[-1. -1. -1. ...  1.  1. -1.] [89.35]
-[-1. -1. -1. ...  1. -1.  1.] [87.5]
-Time taken to solve using skl svm with linear kernel: 28.526849031448364
-[[0.62352941 0.4        0.39607843 ... 0.71372549 0.22352941 0.0745098 ]
- [0.54509804 0.60392157 0.7372549  ... 0.43921569 0.41176471 0.23137255]
- [0.25490196 0.25098039 0.22745098 ... 0.42352941 0.42352941 0.43137255]
- ...
- [0.59607843 0.59607843 0.6        ... 0.29019608 0.31372549 0.22352941]
- [0.6745098  0.68627451 0.65882353 ... 0.63137255 0.64313725 0.54117647]
- [0.10196078 0.11764706 0.12156863 ... 0.19607843 0.21568627 0.21960784]] 1541
-[0.01147231]
-[94.85]
-[78.05]
-Time taken to solve using skl svm with gaussian kernel: 18.71180009841919
-[[0.54509804 0.60392157 0.7372549  ... 0.43921569 0.41176471 0.23137255]
- [0.21176471 0.12156863 0.07058824 ... 0.36078431 0.43921569 0.39607843]
- [0.44705882 0.46666667 0.49019608 ... 0.79215686 0.76470588 0.73333333]
- ...
- [0.6745098  0.68627451 0.65882353 ... 0.63137255 0.64313725 0.54117647]
- [0.10196078 0.11764706 0.12156863 ... 0.19607843 0.21568627 0.21960784]
- [0.59215686 0.52156863 0.41960784 ... 0.29019608 0.21176471 0.16862745]] 1865
-[-6.08461227]
-[89.325]
-[87.4]
+support vectors for CVXOPT Gaussian Kernel 1872 [False False False ...  True False  True]
+Train Accuracy CVXOPT Gaussian Kernel [89.35]
+Test Accuracy CVXOPT Gaussian Kernel [87.5]
+Time taken for scikit-learn - Linear Kernel 21.623164892196655
+b for sklearn Linear Kernel [0.01147231]
+Train Accuracy sklearn linear kernel [94.85]
+Test Accuracy sklearn linear kernel [78.05]
+Time taken for scikit-learn - Gaussian Kernel 13.319754600524902
+b for sklearn gaussian kernel [-6.08461227]
+Train Accuracy sklearn gaussian kernel [89.325]
+Test Accuracy sklearn gaussian kernel [87.4]
+1161  is the count of support vectors common in linear and gaussian case of cvxopt implementation 

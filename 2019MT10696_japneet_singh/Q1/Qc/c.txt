@@ -1,0 +1,10 @@
+Train Set Accuracy:  91.144
+Test Set Accuracy:  0.8261333333333334
+Test Set Precision:  0.9229800869764249
+Test Set Recall:  0.8065
+Test Set F1:  0.8608175899242182
+Confusion Matrix 1a [[8065, 673], [1935, 4327]]
+Test Set Accuracy by Random Prediction:  49.85333333333333
+Test Set Accuracy by Always Predicting Positive:  66.66666666666666
+Confusion Matrix random [[5048, 2570], [4952, 2430]]
+Confusion Matrix always_positive [[10000, 5000], [0, 0]]

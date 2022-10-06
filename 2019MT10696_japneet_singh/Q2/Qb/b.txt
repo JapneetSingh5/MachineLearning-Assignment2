@@ -1,0 +1,61 @@
+     pcost       dcost       gap    pres   dres
+ 0: -1.2152e+03 -1.0683e+04  6e+04  3e+00  5e-10
+ 1: -8.4466e+02 -7.6725e+03  2e+04  6e-01  5e-10
+ 2: -6.5536e+02 -4.0001e+03  5e+03  2e-01  4e-10
+ 3: -5.9273e+02 -1.3910e+03  1e+03  2e-02  4e-10
+ 4: -6.5203e+02 -9.3514e+02  3e+02  6e-03  4e-10
+ 5: -6.8672e+02 -8.1062e+02  1e+02  2e-03  4e-10
+ 6: -7.0772e+02 -7.4555e+02  4e+01  3e-04  4e-10
+ 7: -7.1551e+02 -7.2521e+02  1e+01  5e-05  4e-10
+ 8: -7.1801e+02 -7.1946e+02  1e+00  3e-06  5e-10
+ 9: -7.1847e+02 -7.1856e+02  8e-02  2e-07  5e-10
+10: -7.1850e+02 -7.1850e+02  2e-03  3e-09  5e-10
+11: -7.1850e+02 -7.1850e+02  5e-05  6e-11  5e-10
+Optimal solution found.
+Time taken for CVXOPT - Linear Kernel 41.88663625717163
+w for  CVXOPT Linear Kernel [[-0.74568524]
+ [ 0.03275555]
+ [-0.4837071 ]
+ ...
+ [-0.09054527]
+ [ 0.09773743]
+ [-1.04533169]]
+b for CVXOPT Linear Kernel 0.07047682389961614
+alphas for CVXOPT Linear Kernel (count)  4000
+support vectors for CVXOPT Linear Kernel (count) 1543
+Train Accuracy CVXOPT Linear Kernel [94.95]
+Test Accuracy CVXOPT Linear Kernel [78.15]
+     pcost       dcost       gap    pres   dres
+ 0: -1.5619e+03 -1.0941e+04  6e+04  3e+00  8e-13
+ 1: -1.0747e+03 -7.6723e+03  1e+04  3e-01  8e-13
+ 2: -1.0928e+03 -2.0792e+03  1e+03  1e-02  7e-13
+ 3: -1.3166e+03 -1.6901e+03  4e+02  4e-03  8e-13
+ 4: -1.3954e+03 -1.5869e+03  2e+02  2e-03  8e-13
+ 5: -1.4422e+03 -1.5231e+03  8e+01  6e-04  8e-13
+ 6: -1.4675e+03 -1.4896e+03  2e+01  1e-04  9e-13
+ 7: -1.4754e+03 -1.4797e+03  4e+00  2e-05  9e-13
+ 8: -1.4772e+03 -1.4775e+03  3e-01  8e-07  1e-12
+ 9: -1.4773e+03 -1.4773e+03  9e-03  2e-08  1e-12
+10: -1.4773e+03 -1.4773e+03  2e-04  4e-10  1e-12
+Optimal solution found.
+Time taken for CVXOPT - Gaussiann Kernel 93.71778988838196
+b for CVXOPT Gaussian Kernel -6.086002620715735
+alphas for CVXOPT Gaussian Kernel 4000 [[3.60657330e-08]
+ [1.51825375e-07]
+ [1.74585435e-08]
+ ...
+ [9.99999904e-01]
+ [1.83922215e-08]
+ [9.99999985e-01]]
+support vectors for CVXOPT Gaussian Kernel 1872 [False False False ...  True False  True]
+Train Accuracy CVXOPT Gaussian Kernel [89.35]
+Test Accuracy CVXOPT Gaussian Kernel [87.5]
+Time taken for scikit-learn - Linear Kernel 39.25208878517151
+b for sklearn Linear Kernel [0.01147231]
+Train Accuracy sklearn linear kernel [94.85]
+Test Accuracy sklearn linear kernel [78.05]
+Time taken for scikit-learn - Gaussian Kernel 24.76560091972351
+b for sklearn gaussian kernel [-6.08461227]
+Train Accuracy sklearn gaussian kernel [89.325]
+Test Accuracy sklearn gaussian kernel [87.4]
+1161  is the count of support vectors common in linear and gaussian case of cvxopt implementation 

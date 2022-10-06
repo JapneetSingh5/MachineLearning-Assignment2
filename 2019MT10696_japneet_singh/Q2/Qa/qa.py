@@ -5,9 +5,13 @@ import cvxopt
 import time
 from scipy import spatial
 from sklearn import svm
+import matplotlib.pyplot as plt
 
-class1 = 1 # (6 mod5)=1
-class2 = 2 # (6+1 mod5)=2
+# Entry number 2019MT10696, last digit is 6
+class1 = 1 # (6 mod5) = 1
+class2 = 2 # (6+1 mod5) = 2
+
+# for latest output and accuracies,  see a.txt 
 
 def process_command():
     args_length = len(sys.argv);
@@ -30,151 +34,161 @@ def main():
     test_data_file = path_test_data+ "/test_data.pickle"
     train_data_file_loaded = pickle.load(open(train_data_file,"rb"))
     test_data_file_loaded = pickle.load(open(test_data_file,"rb"))
-    # print(len(train_data_loaded['data'][0]), train_data_loaded['labels'][1])
-    # print(len(train_data_loaded['data'][0].flatten()), train_data_loaded['labels'][1])
     train_data = [[(train_data_file_loaded['data'][i].flatten()/255).tolist(), train_data_file_loaded['labels'][i].tolist()] for i in range(len(train_data_file_loaded['data']))]
     train_data_X = np.array([ele[0] for ele in train_data if (ele[1][0]==class1 or ele[1][0]==class2)], dtype=float)
     train_data_Y = np.array([[transform_label(ele[1][0])] for ele in train_data if (ele[1][0]==class1 or ele[1][0]==class2)])
     test_data = [[(test_data_file_loaded['data'][i].flatten()/255).tolist(), test_data_file_loaded['labels'][i].tolist()] for i in range(len(test_data_file_loaded['data']))]
     test_data_X = np.array([ele[0] for ele in test_data if (ele[1][0]==class1 or ele[1][0]==class2)], dtype=float)
     test_data_Y = np.array([[transform_label(ele[1][0])] for ele in test_data if (ele[1][0]==class1 or ele[1][0]==class2)])
-    # print(train_data_X, train_data_X.shape, train_data_Y, train_data_Y.shape)
     
     # Linear CVXOPT
     start_linear = time.time()
     c_linear = 1
-    m,n = train_data_X.shape
+    m,_ = train_data_X.shape
     P_temp = np.multiply(train_data_Y,train_data_X)
     P_linear = cvxopt.matrix(np.dot(P_temp, P_temp.T))
-    # Qm×1[i] = 1
+    # Q(mx1) = [1;1;1....1]
     q_linear = cvxopt.matrix(-1.0*np.ones((m, 1)))
-    # A1×m[i] = y(i)
+    # G(2mxm) = [−I(mxm); I(mxm)]
+    G_linear = cvxopt.matrix(np.vstack((-1.0*np.eye(m),c_linear*1.0*np.eye(m))))
+    # h(2mx1) = [Zeros(mx1); C x (Ones(mx1))]
+    h_linear = cvxopt.matrix(np.hstack((np.zeros(m),c_linear*1.0*np.ones(m))))
+    # A(1xm)[i] = y(i)
     A_linear = cvxopt.matrix(train_data_Y.reshape(1,-1))
     # b=0
     b_linear = cvxopt.matrix(np.zeros(1))
-    # G2m×m = [−Identity(m); Identity(m)]
-    G_linear = cvxopt.matrix(np.vstack((-1.0*np.eye(m),c_linear*1.0*np.eye(m))))
-    # h2m×1 = [Zerosm×1; C × Onesm×1]
-    h_linear = cvxopt.matrix(np.hstack((np.zeros(m),c_linear*1.0*np.ones(m))))
-    cvxopt.solvers.options['show_progress'] = True
-    # cvxopt.solvers.options['abstol'] = 1e-10
-    # cvxopt.solvers.options['reltol'] = 1e-10
-    # cvxopt.solvers.options['feastol'] = 1e-10
+    # cvxopt.solvers.options['show_progress'] = False
+    # cvxopt.solvers.options['abstol'] = 1e-15
     sol_linear = cvxopt.solvers.qp(P_linear, q_linear, G_linear, h_linear, A_linear, b_linear)
-    print(f"Time taken to solve using cvxopt with linear kernel: {time.time() - start_linear}")
-    # print(sol_linear)
-    # print(sol_linear['x'])
+    print("Time taken for CVXOPT - Linear Kernel", time.time() - start_linear)
     alphas = np.array(sol_linear['x'])
     support_vectors_linear = (alphas > 1e-4).flatten()
-    # print(alphas)
-    # print(support_vectors_linear)
+    # count the number of support vectors found
+    count_svs = len(train_data_Y[support_vectors_linear] == 1)
     w_linear = ((train_data_Y[support_vectors_linear] * alphas[support_vectors_linear]).T @ train_data_X[support_vectors_linear]).reshape(-1, 1)
     b_linear = np.mean(train_data_Y[support_vectors_linear] - np.dot(train_data_X[support_vectors_linear], w_linear))
-    pos_svs = len(train_data_Y[support_vectors_linear] == 1)
-    neg_svs = len(train_data_Y[support_vectors_linear] == -1)
-    print("w", w_linear)
-    print("b", b_linear)
-    print("alphas", alphas.size, alphas)
-    print("support vectors", support_vectors_linear.size, support_vectors_linear)
-    print("pos_svs", pos_svs)
-    print("neg_svs", neg_svs)
+    print("w for  CVXOPT Linear Kernel", w_linear)
+    print("b for CVXOPT Linear Kernel", b_linear)
+    print("alphas for CVXOPT Linear Kernel (count) ", alphas.size)
+    print("support vectors for CVXOPT Linear Kernel (count)", count_svs)
+    # predictions for training set
     train_prediction_linear = np.dot(train_data_X, w_linear) + b_linear
-    train_prediction_linear_final = np.array([1.0 if x >= 0 else -1.0 for x in train_prediction_linear])
-    train_accuracy_linear = 100.0*sum(x == y for x,y in zip(train_prediction_linear_final, train_data_Y))/len(train_data_Y)
-    print(train_prediction_linear_final, train_accuracy_linear)
+    # classify predictions into classes for train set
+    train_prediction_linear_final = np.array([1.0 if wtb >= 0 else -1.0 for wtb in train_prediction_linear])
+    # calculate training accuracy
+    train_accuracy_linear = 100.0*sum(predcited == actual for predcited,actual in zip(train_prediction_linear_final, train_data_Y))/len(train_data_Y)
+    print("Train Accuracy CVXOPT Linear Kernel", train_accuracy_linear)
+    # predictions for testing set
     test_prediction_linear = np.dot(test_data_X, w_linear) + b_linear
-    test_prediction_linear_final = np.array([1.0 if x >= 0 else -1.0 for x in test_prediction_linear])
+    # classify predictions into classes for test set
+    test_prediction_linear_final = np.array([1.0 if wtb >= 0 else -1.0 for wtb in test_prediction_linear])
+    # calculate test set accuracy
     test_accuracy_linear = 100.0*sum(x == y for x,y in zip(test_prediction_linear_final, test_data_Y))/len(test_data_Y)
-    print(test_prediction_linear_final, test_accuracy_linear)
-    # print(w.size, train_data_Y.size)
-    # print(w)
-
+    print("Test Accuracy CVXOPT Linear Kernel", test_accuracy_linear)
     # Gaussian CVXOPT
     gamma = 0.001
     start_gaussian = time.time()
-    pdist = spatial.distance.pdist(train_data_X, 'sqeuclidean')
-    K = np.exp(-1*gamma*spatial.distance.squareform(pdist))
-    # K = np.zeros((m, m))
-    # for i, x1 in enumerate(train_data_X):
-    #     for j, x2 in enumerate(train_data_X):
-    #         K[i][j] = np.exp(-gamma * np.linalg.norm(x1 - x2)**2)
-    P_gaussian = cvxopt.matrix(np.outer(train_data_Y, train_data_Y)*K)
+    # norm of distances to be used in gaussian kernel found using pdist function
+    training_data_pdist = spatial.distance.pdist(train_data_X, 'sqeuclidean')
+    # build gaussian kernel 
+    gaussian_kernel = np.exp(-1*gamma*spatial.distance.squareform(training_data_pdist))
+    # looping to calculate Kernel was too slow, much much faster solution found on stackoverflow
+    # ref: https://stackoverflow.com/questions/47271662/what-is-the-fastest-way-to-compute-an-rbf-kernel-in-python
+    # Only P changes for gaussian coming from linear , b reinit'd as it was changed before
+    P_gaussian = cvxopt.matrix(np.outer(train_data_Y, train_data_Y)*gaussian_kernel)
     b_cvxopt_gaussian = cvxopt.matrix(np.zeros(1))
-    # cvxopt.solvers.options['abstol'] = 1e-10
-    # cvxopt.solvers.options['reltol'] = 1e-10
-    # cvxopt.solvers.options['feastol'] = 1e-10
+    # cvxopt.solvers.options['show_progress'] = False
+    # cvxopt.solvers.options['abstol'] = 1e-15
     sol_gaussian = cvxopt.solvers.qp(P_gaussian, q_linear, G_linear, h_linear, A_linear, b_cvxopt_gaussian)
-    print(f"Time taken to solve using cvxopt with gaussian kernel: {time.time() - start_gaussian}")
+    print("Time taken for CVXOPT - Gaussiann Kernel", time.time() - start_gaussian)
     alphas_gaussian = np.array(sol_gaussian['x'])
+    # 1e-4 gives almost 'exactly' the same number of support vectors as sklearn
+    # 1e-5 is too small
     support_vectors_gaussian = (alphas_gaussian > 1e-4)
-    supp_vec_ind = np.where(support_vectors_gaussian == True)[0]
+    indices = np.where(support_vectors_gaussian == True)[0]
     support_vectors_gaussian = support_vectors_gaussian.flatten()
-    pos_svs = len(train_data_Y[support_vectors_gaussian] == 1)
-    # print(alphas)
-    # print(support_vectors_linear)
-    pdist2 = spatial.distance.pdist(train_data_X[supp_vec_ind], 'sqeuclidean')
-    K_train = np.exp(-1*gamma*spatial.distance.squareform(pdist2))
-    w_train = np.dot(K_train.T, (alphas_gaussian[support_vectors_gaussian]*train_data_Y[support_vectors_gaussian]))
-    bias = train_data_Y[support_vectors_gaussian] - w_train
-    b_gaussian = np.mean(bias)
-    cdist = spatial.distance.cdist(train_data_X[supp_vec_ind], train_data_X, 'sqeuclidean')
-    K_train2 = np.exp(-1*gamma*(cdist))
-    w_gaussian = np.dot(K_train2.T, (alphas_gaussian[supp_vec_ind]*train_data_Y[supp_vec_ind]))
+    # count the number of support vectors for the gaussian case
+    count_svs = len(train_data_Y[support_vectors_gaussian] == 1)
+    training_data_svs_pdist = spatial.distance.pdist(train_data_X[indices], 'sqeuclidean')
+    kernel_train_svs = np.exp(-1*gamma*spatial.distance.squareform(training_data_svs_pdist))
+    w_train = np.dot(kernel_train_svs.T, (alphas_gaussian[support_vectors_gaussian]*train_data_Y[support_vectors_gaussian]))
+    b_gaussian = np.mean(train_data_Y[support_vectors_gaussian] - w_train)
+    training_data_svs_cdist = spatial.distance.cdist(train_data_X[indices], train_data_X, 'sqeuclidean')
+    kernel_train_svs2 = np.exp(-1*gamma*(training_data_svs_cdist))
+    w_gaussian = np.dot(kernel_train_svs2.T, (alphas_gaussian[indices]*train_data_Y[indices]))
+    # raw predictions for gaussian cvxopt case
     train_prediction_gaussian = w_gaussian + b_gaussian
-    # w_gaussian = np.dot(K_train.T, (alphas_gaussian[support_vectors_gaussian]*train_data_Y[support_vectors_gaussian]))
-    # w_gaussian = ((train_data_Y[support_vectors_gaussian] * alphas_gaussian[support_vectors_gaussian]).T @ train_data_X[support_vectors_gaussian]).reshape(-1, 1)
-    # bias = train_data_Y[support_vectors_gaussian] - w_gaussian
-    # b_gaussian = np.mean(bias)
-    # a = np.multiply(train_data_Y.reshape(-1, 1), alphas_gaussian)
-    # b_gaussian = (train_data_Y - w_gaussian)
-    # b_gaussian = np.mean(b_gaussian)
-    print("w", w_gaussian)
-    print("b", b_gaussian)
-    print("alphas", alphas_gaussian.size, alphas_gaussian)
-    print("support vectors", support_vectors_gaussian.size, support_vectors_gaussian)
-    print("pos_svs", pos_svs)
-    # cdist = spatial.distance.cdist(train_data_X[supp_vec_ind], train_data_X, 'sqeuclidean')
-    # K_train2 = np.exp(-1*0.05*(cdist))
-    # w2 = np.dot(K_train2.T, (alphas_gaussian[supp_vec_ind]*train_data_Y[supp_vec_ind]))
-    # train_prediction_gaussian = w2 + b_gaussian
-    # train_prediction_gaussian = w_gaussian + b_gaussian
-    # train_prediction_gaussian = np.dot(train_data_X, w_gaussian) + b_gaussian
-    print("train pred gaussian", train_prediction_gaussian)
+    print("b for CVXOPT Gaussian Kernel", b_gaussian)
+    print("alphas for CVXOPT Gaussian Kernel", alphas_gaussian.size, alphas_gaussian)
+    print("support vectors for CVXOPT Gaussian Kernel", count_svs, support_vectors_gaussian)
+    # classify predictions into classes
     train_prediction_gaussian_final = np.array([1.0 if x >= 0 else -1.0 for x in train_prediction_gaussian])
-    train_accuracy_gaussian = 100.0*sum(x == y for x,y in zip(train_prediction_gaussian_final, train_data_Y))/len(train_data_Y)
-    print(train_prediction_gaussian_final, train_accuracy_gaussian)
-    cdist2 = spatial.distance.cdist(train_data_X[supp_vec_ind], test_data_X, 'sqeuclidean')
-    K_train3 = np.exp(-1*gamma*(cdist2))
-    w_gaussian_test = np.dot(K_train3.T, (alphas_gaussian[supp_vec_ind]*train_data_Y[supp_vec_ind]))
+    # calc accuracy for gaussian predictions
+    train_accuracy_gaussian = 100.0*sum(predicted == actual for predicted,actual in zip(train_prediction_gaussian_final, train_data_Y))/len(train_data_Y)
+    print("Train Accuracy CVXOPT Gaussian Kernel", train_accuracy_gaussian)
+    test_data_cdist = spatial.distance.cdist(train_data_X[indices], test_data_X, 'sqeuclidean')
+    kernel_test = np.exp(-1*gamma*(test_data_cdist))
+    w_gaussian_test = np.dot(kernel_test.T, (alphas_gaussian[indices]*train_data_Y[indices]))
+    # raw predictions for test set
     test_prediction_gaussian = w_gaussian_test + b_gaussian
-    # test_prediction_gaussian = np.dot(test_data_X, w_gaussian) + b_gaussian
+    # classify test set predictions into classes
     test_prediction_gaussian_final = np.array([1.0 if x >= 0 else -1.0 for x in test_prediction_gaussian])
+    # calculate test set accuracy
     test_accuracy_gaussian = 100.0*sum(x == y for x,y in zip(test_prediction_gaussian_final, test_data_Y))/len(test_data_Y)
-    print(test_prediction_gaussian_final, test_accuracy_gaussian)
+    print("Test Accuracy CVXOPT Gaussian Kernel", test_accuracy_gaussian)
 
+    # sklearn SVM Linear Kernel
     start_svm_linear = time.time()
     svm_linear = svm.SVC(C=1.0, kernel="linear")
     svm_linear.fit(train_data_X, train_data_Y.ravel())
-    print(f"Time taken to solve using skl svm with linear kernel: {time.time() - start_svm_linear}")
-    print(svm_linear.support_vectors_, len(svm_linear.support_vectors_))
-    print(svm_linear.intercept_)
+    print("Time taken for scikit-learn - Linear Kernel", time.time() - start_svm_linear)
+    # print(svm_linear.support_vectors_, len(svm_linear.support_vectors_))
+    print("b for sklearn Linear Kernel", svm_linear.intercept_)
     train_accuracy_linear_skl_svm = 100.0*sum(x == y for x,y in zip(svm_linear.predict(train_data_X).reshape(-1,1), train_data_Y))/len(train_data_Y)
-    print(train_accuracy_linear_skl_svm)
+    print("Train Accuracy sklearn linear kernel" , train_accuracy_linear_skl_svm)
     test_accuracy_linear_skl_svm = 100.0*sum(x == y for x,y in zip(svm_linear.predict(test_data_X).reshape(-1,1), test_data_Y))/len(test_data_Y)
-    print(test_accuracy_linear_skl_svm)
+    print("Test Accuracy sklearn linear kernel", test_accuracy_linear_skl_svm)
     start_svm_gaussian =time.time()
     svm_gaussian= svm.SVC(C=1.0, kernel="rbf", gamma=gamma)
     svm_gaussian.fit(train_data_X, train_data_Y.ravel())
-    print(f"Time taken to solve using skl svm with gaussian kernel: {time.time() - start_svm_gaussian}")
-    print(svm_gaussian.support_vectors_, len(svm_gaussian.support_vectors_))
-    print(svm_gaussian.intercept_)
+    print("Time taken for scikit-learn - Gaussian Kernel", time.time() - start_svm_gaussian)
+    # print(svm_gaussian.support_vectors_, len(svm_gaussian.support_vectors_))
+    print("b for sklearn gaussian kernel",svm_gaussian.intercept_)
     train_accuracy_gaussian_skl_svm = 100.0*sum(x == y for x,y in zip(svm_gaussian.predict(train_data_X).reshape(-1,1), train_data_Y))/len(train_data_Y)
-    print(train_accuracy_gaussian_skl_svm)
+    print("Train Accuracy sklearn gaussian kernel" ,train_accuracy_gaussian_skl_svm)
     test_accuracy_gaussian_skl_svm = 100.0*sum(x == y for x,y in zip(svm_gaussian.predict(test_data_X).reshape(-1,1), test_data_Y))/len(test_data_Y)
-    print(test_accuracy_gaussian_skl_svm)
+    print("Test Accuracy sklearn gaussian kernel" ,test_accuracy_gaussian_skl_svm)
+    common_support_vectors_cvxopt = 0
+    for i in range(len(support_vectors_linear)):
+        if(support_vectors_linear[i] and support_vectors_gaussian[i]):
+            common_support_vectors_cvxopt+=1
+    print(common_support_vectors_cvxopt, " is the count of support vectors common in linear and gaussian case of cvxopt implementation ")
+    # takes too much time hence commented out, run once before submission, result is documented in report
+    # common_sv_linear = 0
+    # common_sv_gaussian = 0
+    # for i in range(len(alphas_gaussian)):
+    #     if(alphas_gaussian[i]>1e-4):
+    #         if(alphas_gaussian[i] in svm_gaussian.support_vectors_):
+    #             common_sv_gaussian+=1
+    #         if(alphas[i] in svm_linear.support_vectors_):
+    #             common_sv_linear+=1
+    # print("common svs in linear cvxopt and sklearn", common_sv_linear)
+    # print("common svs in gaussian cvxopt and sklearn", common_sv_gaussian)
+    alphas_indices = np.flip(np.argsort(alphas,axis = 0))
+    count = 0
+    # plotting top 5 coefficients
+    for i in range(5):
+        imagearr = np.array(train_data_X[alphas_indices[i]]).reshape(32,32,3)
+        plt.imshow(imagearr)
+        plt.savefig("alphas_linear"+str(count)+".png")
+        count+=1
+    # alphas_g_indices = np.flip(np.argsort(alphas_gaussian,axis = 0))
+    # for i in range(5):
+    #     imagearr = np.array(train_data_X[alphas_g_indices[i]]).reshape(32,32,3)
+    #     plt.imshow(imagearr)
+    #     plt.savefig("alphas_gaussian"+str(count)+".png")
+    #     count+=1
 
-
-
-
+            
 if __name__ == "__main__":
     main()

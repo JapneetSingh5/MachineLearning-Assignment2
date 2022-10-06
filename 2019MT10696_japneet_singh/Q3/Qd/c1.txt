@@ -1,0 +1,113 @@
+➜  Qd git:(main) ✗ python3 qd.py /Users/japneet/Desktop/COL774/COL774-Assignment2/assn2_data/part2_data /Users/japneet/Desktop/COL774/COL774-Assignment2/assn2_data/part2_data
+Here
+Classifier for 0 and 1
+[85.91108328]
+Classifier for 0 and 2
+[82.06555349]
+Classifier for 0 and 3
+[86.67701863]
+Classifier for 0 and 4
+[85.78169236]
+Classifier for 1 and 2
+[89.03426791]
+Classifier for 1 and 3
+[86.95244055]
+Classifier for 1 and 4
+[89.85736926]
+Classifier for 2 and 3
+[78.98640297]
+Classifier for 2 and 4
+[70.29733959]
+Classifier for 3 and 4
+[79.94341402]
+Accuracy 1 [58.7]
+2 0 [58.7]
+Classifier for 0 and 1
+[85.44025157]
+Classifier for 0 and 2
+[82.06334274]
+Classifier for 0 and 3
+[87.02241869]
+Classifier for 0 and 4
+[86.11111111]
+Classifier for 1 and 2
+[89.87223434]
+Classifier for 1 and 3
+[86.53906495]
+Classifier for 1 and 4
+[89.91935484]
+Classifier for 2 and 3
+[79.34918648]
+Classifier for 2 and 4
+[70.49180328]
+Classifier for 3 and 4
+[80.59794457]
+Accuracy 1 [58.15]
+2 1 [58.15]
+Classifier for 0 and 1
+[85.75427683]
+Classifier for 0 and 2
+[83.11972491]
+Classifier for 0 and 3
+[86.89185002]
+Classifier for 0 and 4
+[86.13432374]
+Classifier for 1 and 2
+[89.26089703]
+Classifier for 1 and 3
+[86.81903569]
+Classifier for 1 and 4
+[89.68105066]
+Classifier for 2 and 3
+[79.07488987]
+Classifier for 2 and 4
+[69.57888121]
+Classifier for 3 and 4
+[80.7165109]
+Accuracy 1 [56.6]
+2 2 [56.6]
+Classifier for 0 and 1
+[85.58417085]
+Classifier for 0 and 2
+[82.93675642]
+Classifier for 0 and 3
+[86.97017268]
+Classifier for 0 and 4
+[86.30393996]
+Classifier for 1 and 2
+[89.07615481]
+Classifier for 1 and 3
+[86.79186228]
+Classifier for 1 and 4
+[89.61970075]
+Classifier for 2 and 3
+[79.71918877]
+Classifier for 2 and 4
+[70.47855811]
+Classifier for 3 and 4
+[80.61701465]
+Accuracy 1 [58.2]
+2 3 [58.2]
+Classifier for 0 and 1
+[85.90021692]
+Classifier for 0 and 2
+[83.16582915]
+Classifier for 0 and 3
+[86.84786004]
+Classifier for 0 and 4
+[86.5119197]
+Classifier for 1 and 2
+[89.09996886]
+Classifier for 1 and 3
+[86.92688971]
+Classifier for 1 and 4
+[90.35769829]
+Classifier for 2 and 3
+[79.59183673]
+Classifier for 2 and 4
+[71.1223203]
+Classifier for 3 and 4
+[80.74631546]
+Accuracy 1 [56.45]
+2 4 [56.45]
+[0, 0, array([288.1]), 0, 0]

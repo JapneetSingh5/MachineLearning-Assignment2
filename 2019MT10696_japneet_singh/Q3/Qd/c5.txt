@@ -1,0 +1,113 @@
+➜  Qd git:(main) ✗ python3 qd.py /Users/japneet/Desktop/COL774/COL774-Assignment2/assn2_data/part2_data /Users/japneet/Desktop/COL774/COL774-Assignment2/assn2_data/part2_data
+Here
+Classifier for 0 and 1
+[91.94357367]
+Classifier for 0 and 2
+[87.11907006]
+Classifier for 0 and 3
+[91.72673143]
+Classifier for 0 and 4
+[90.4732254]
+Classifier for 1 and 2
+[93.72844152]
+Classifier for 1 and 3
+[93.55645918]
+Classifier for 1 and 4
+[94.15786203]
+Classifier for 2 and 3
+[85.10971787]
+Classifier for 2 and 4
+[79.10308315]
+Classifier for 3 and 4
+[85.89624107]
+Accuracy 5 [59.35]
+3 0 [59.35]
+Classifier for 0 and 1
+[91.73374613]
+Classifier for 0 and 2
+[87.47663551]
+Classifier for 0 and 3
+[92.01615409]
+Classifier for 0 and 4
+[89.80537535]
+Classifier for 1 and 2
+[94.08060453]
+Classifier for 1 and 3
+[93.75196232]
+Classifier for 1 and 4
+[94.19294411]
+Classifier for 2 and 3
+[85.56082148]
+Classifier for 2 and 4
+[77.28557964]
+Classifier for 3 and 4
+[86.46616541]
+Accuracy 5 [61.05]
+3 1 [61.05]
+Classifier for 0 and 1
+[92.25705329]
+Classifier for 0 and 2
+[87.93590952]
+Classifier for 0 and 3
+[92.06497969]
+Classifier for 0 and 4
+[90.34307497]
+Classifier for 1 and 2
+[93.86046512]
+Classifier for 1 and 3
+[93.27782917]
+Classifier for 1 and 4
+[93.85579937]
+Classifier for 2 and 3
+[85.16687268]
+Classifier for 2 and 4
+[78.25950361]
+Classifier for 3 and 4
+[85.87941268]
+Accuracy 5 [58.95]
+3 2 [58.95]
+Classifier for 0 and 1
+[92.34645669]
+Classifier for 0 and 2
+[87.62143529]
+Classifier for 0 and 3
+[91.82132746]
+Classifier for 0 and 4
+[90.16290727]
+Classifier for 1 and 2
+[93.64089776]
+Classifier for 1 and 3
+[92.89737171]
+Classifier for 1 and 4
+[94.04799003]
+Classifier for 2 and 3
+[84.80697385]
+Classifier for 2 and 4
+[79.87596899]
+Classifier for 3 and 4
+[85.90102708]
+Accuracy 5 [60.55]
+3 3 [60.55]
+Classifier for 0 and 1
+[91.78849145]
+Classifier for 0 and 2
+[87.38014228]
+Classifier for 0 and 3
+[91.68224299]
+Classifier for 0 and 4
+[90.3456867]
+Classifier for 1 and 2
+[93.47282948]
+Classifier for 1 and 3
+[93.04812834]
+Classifier for 1 and 4
+[94.18238994]
+Classifier for 2 and 3
+[84.01626525]
+Classifier for 2 and 4
+[78.79924953]
+Classifier for 3 and 4
+[85.25984252]
+Accuracy 5 [61.55]
+3 4 [61.55]
+[0, 0, 0, array([301.45]), 0]

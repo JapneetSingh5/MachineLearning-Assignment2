@@ -92,7 +92,7 @@ def main():
     training_data_pdist = spatial.distance.pdist(train_data_X, 'sqeuclidean')
     # build gaussian kernel 
     gaussian_kernel = np.exp(-1*gamma*spatial.distance.squareform(training_data_pdist))
-    # looping to calculate Kernel was too slow, much much faster solution found on stackoverflow
+    # looping to calculate Kernel was too slow, much much faster solution found on stackoverflow 
     # ref: https://stackoverflow.com/questions/47271662/what-is-the-fastest-way-to-compute-an-rbf-kernel-in-python
     # Only P changes for gaussian coming from linear , b reinit'd as it was changed before
     P_gaussian = cvxopt.matrix(np.outer(train_data_Y, train_data_Y)*gaussian_kernel)
